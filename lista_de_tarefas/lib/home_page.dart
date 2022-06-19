@@ -64,8 +64,10 @@ class _HomePageState extends State<HomePage> {
                       return CheckboxListTile(
                         title: Text(item.tarefa),
                         value: item.done,
-                        onChanged: (valor) {
-                          print(valor);
+                        onChanged: (value) {
+                          setState(() {
+                            item.done = value!;
+                          });
                         },
                         //O CheckboxListTile precisa de key que deve ser um item unico
                         key: Key(item.tarefa),
