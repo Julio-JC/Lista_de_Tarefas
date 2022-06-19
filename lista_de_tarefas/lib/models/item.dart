@@ -1,20 +1,17 @@
 class Item {
-  String title = "";
-  bool? done = false;
+  late String tarefa;
+  late bool done;
 
-  Item({
-    required this.title,
-    this.done,
-  });
+  Item({required this.tarefa, required this.done});
 
-  Item.fromJson(Map<String, dynamic> json) {
-    title = json['String'];
+  Item.fromJason(Map<String, dynamic> json) {
+    tarefa = json['tarefa'];
     done = json['done'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['String'] = this.title;
+    data['tarefa'] = this.tarefa;
     data['done'] = this.done;
     return data;
   }
