@@ -24,7 +24,19 @@ class _HomePageState extends State<HomePage> {
     ),
   );
 
-  var newTaskCtrl = TextEditingController();
+  var controleDeTsrefa = TextEditingController();
+
+  void add() {
+    if (controleDeTsrefa.text.isEmpty) {
+      return;
+    }
+    setState(() {
+      widget.item.add(
+        Item(tarefa: controleDeTsrefa.text, done: false),
+      );
+      controleDeTsrefa.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +53,10 @@ class _HomePageState extends State<HomePage> {
               child: Padding(
                 padding: EdgeInsets.all(10),
                 child: TextFormField(
-                  controller: newTaskCtrl,
+                  controller: controleDeTsrefa,
                   keyboardType: TextInputType.text,
+                  decoration:
+                      InputDecoration(labelText: 'Adicionar Nova Tarefa: '),
                 ),
               ),
             ),
@@ -55,7 +69,7 @@ class _HomePageState extends State<HomePage> {
                 // ListView.bilder() cria uma matriz rolavel na tela criada sob demanda.
                 child: SafeArea(
                   child: ListView.builder(
-                    // para acessar variaveis e métodos da classe pai, utiliza o 'widget.'
+                    // para acessar variaveis e métodos da classe pai no caso aqui class homePage, utiliza o 'widget.'
                     itemCount: widget.item.length,
                     //o itemBuilder pergunta como construir os widgets na tela.
                     itemBuilder: (BuildContext ctxt, int index) {
@@ -79,6 +93,11 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: add,
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blue,
       ),
     );
   }
