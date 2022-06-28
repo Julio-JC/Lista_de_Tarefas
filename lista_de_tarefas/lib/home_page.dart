@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/item.dart';
@@ -38,6 +37,7 @@ class _HomePageState extends State<HomePage> {
         Item(tarefa: controleDeTarefa.text, done: false),
       );
       controleDeTarefa.clear();
+      save();
     });
   }
 
@@ -45,18 +45,34 @@ class _HomePageState extends State<HomePage> {
   void remover(int index) {
     setState(() {
       widget.item.removeAt(index);
+      save();
     });
   }
 
-  // é criado uma função() assincrona por que ela não ocorre em tempo real, por istro usa o async{}
+  // é criado uma função() assincrona por que ela não ocorre em tempo real, por isto usa o async{}
   // Ele vai aguardar até que o SharedPreferences.getInstance() seja carregado.
+  // A documentação mostra como usar a API e como usar a shered pefeence com o await.
   Future carregar() async {
     var prefs = await SharedPreferences.getInstance();
-    var dados = prefs.getString('dados');
+    var data = prefs.getString('data');
 
-    if (dados != null) {
-      Iterable decoded = jsonDecode(dados);
+    if (data != null) {
+      Iterable decoded = jsonDecode(data);
+      List<Item> resultado = decoded.map((e) => Item.fromJason(e)).toList();
+      setState(() {
+        widget.item = resultado;
+      });
     }
+  }
+
+  //Chamado o contrutor da HomePageState() e para chamar o método load() dentro dele (por que ??)
+  _HomePageState() {
+    carregar();
+  }
+
+  save() async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setString('data', jsonEncode(widget.item));
   }
 
   @override
@@ -70,14 +86,19 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: EdgeInsets.all(12),
             child: Container(
-              color: Colors.orange,
+              color: Colors.blue.shade300,
               child: Padding(
                 padding: EdgeInsets.all(10),
                 child: TextFormField(
                   controller: controleDeTarefa,
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                   keyboardType: TextInputType.text,
-                  decoration:
-                      InputDecoration(labelText: 'Adicionar Nova Tarefa: '),
+                  decoration: InputDecoration(
+                    labelText: 'Adicionar Nova Tarefa:',
+                    helperStyle: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ),
@@ -86,7 +107,7 @@ class _HomePageState extends State<HomePage> {
             child: Padding(
               padding: EdgeInsets.all(12),
               child: Container(
-                color: Colors.blueGrey,
+                color: Colors.white,
                 // ListView.bilder() cria uma matriz rolavel na tela criada sob demanda.
                 child: SafeArea(
                   child: ListView.builder(
@@ -104,6 +125,7 @@ class _HomePageState extends State<HomePage> {
                           onChanged: (value) {
                             setState(() {
                               item.done = value!;
+                              save();
                             });
                           },
                           //O CheckboxListTile precisa de key que deve ser um item unico
