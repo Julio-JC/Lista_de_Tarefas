@@ -85,19 +85,22 @@ class _HomePageState extends State<HomePage> {
         children: [
           Padding(
             padding: EdgeInsets.all(12),
-            child: Container(
-              color: Colors.blue.shade300,
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: TextFormField(
-                  controller: controleDeTarefa,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    labelText: 'Adicionar Nova Tarefa:',
-                    helperStyle: TextStyle(color: Colors.white),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                color: Colors.blueGrey[200],
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: TextFormField(
+                    controller: controleDeTarefa,
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      labelText: 'Adicionar Nova Tarefa:',
+                      helperStyle: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ),
@@ -106,41 +109,55 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(12),
-              child: Container(
-                color: Colors.white,
-                // ListView.bilder() cria uma matriz rolavel na tela criada sob demanda.
-                child: SafeArea(
-                  child: ListView.builder(
-                    // para acessar variaveis e métodos da classe pai no caso class homePage, utiliza o 'widget.'
-                    itemCount: widget.item.length,
-                    //o itemBuilder pergunta como construir os widgets na tela.
-                    itemBuilder: (BuildContext ctxt, int index) {
-                      // É criado uma variavel para poder utilizar o widget.item[index] em varios lugares
-                      final item = widget.item[index];
-                      // foi adicionado o widget Dismissible() = dispensavel, para remover o item deslisando.
-                      return Dismissible(
-                        child: CheckboxListTile(
-                          title: Text(item.tarefa),
-                          value: item.done,
-                          onChanged: (value) {
-                            setState(() {
-                              item.done = value!;
-                              save();
-                            });
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  color: Colors.blueGrey[100],
+                  // ListView.bilder() cria uma matriz rolavel na tela criada sob demanda.
+                  child: SafeArea(
+                    child: ListView.builder(
+                      // para acessar variaveis e métodos da classe pai no caso class homePage, utiliza o 'widget.'
+                      itemCount: widget.item.length,
+                      //o itemBuilder pergunta como construir os widgets na tela.
+                      itemBuilder: (BuildContext ctxt, int index) {
+                        // É criado uma variavel para poder utilizar o widget.item[index] em varios lugares
+                        final item = widget.item[index];
+                        // foi adicionado o widget Dismissible() = dispensavel, para remover o item deslisando.
+                        return Dismissible(
+                          child: CheckboxListTile(
+                            title: Text(item.tarefa),
+                            value: item.done,
+                            onChanged: (value) {
+                              setState(() {
+                                item.done = value!;
+                                save();
+                              });
+                            },
+                            //O CheckboxListTile precisa de key que deve ser um item unico
+                            //Mas como o Dismissible() tambem precisa foi colocado a key
+                            //fora do CheckboxListTile() porque não pecisa ficar nos dois.
+                          ),
+                          key: Key(item.tarefa),
+                          background: Container(
+                            child: Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Text(
+                                'Excluir',
+                                style: TextStyle(color: Colors.black),
+                                textAlign: TextAlign.end,
+                              ),
+                            ),
+                            color: Colors.red.withOpacity(0.2),
+                          ),
+                          onDismissed: (direction) {
+                            if (direction == DismissDirection.endToStart) {
+                              remover(index);
+                            }
+                            ;
                           },
-                          //O CheckboxListTile precisa de key que deve ser um item unico
-                          //Mas como o Dismissible() tambem precisa foi colocado a key
-                          //fora do CheckboxListTile() porque não pecisa ficar nos dois.
-                        ),
-                        key: Key(item.tarefa),
-                        background: Container(
-                          color: Colors.red.withOpacity(0.2),
-                        ),
-                        onDismissed: (direction) {
-                          remover(index);
-                        },
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
